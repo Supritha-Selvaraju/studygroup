@@ -1,0 +1,29 @@
+/composer.lock
+/cov
+/coverage.clover.xml
+/docs
+.idea
+/.php-cs-fixer.cache
+/.phpdoc/cache
+/.phpunit.result.cache
+/phpunit.xml
+/.phpunit.cache
+/tools
+/vendor
+# PHP dependencies
+vendor/
+
+# Node dependencies
+node_modules/
+
+# Environment variables & secrets
+.env
+
+# Logs & certificates
+*.log
+*.pem
+
+# IDE / system files
+.DS_Store
+.idea/
+.vscode/

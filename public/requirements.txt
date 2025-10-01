@@ -1,0 +1,8 @@
+to start :
+  docker compose up -d
+to check containers :
+  docker ps
+to open sql bash(to run queries):
+  1. docker-compose exec mysql bash
+  2. mysql -u root -p studygroup_db
+  enter password: root

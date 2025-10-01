@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign Up – Study Group</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rec-purple: #6f2da8;
+      --rec-dark-purple: #4e1a73;
+      --rec-yellow: #fed700;
+      --rec-white: #f9f9f9;
+      --rec-gray: #252525; 
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background-color: var(--rec-gray);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .signup-container {
+      display: flex;
+      width: 900px;
+      max-width: 95vw;
+      border-radius: 12px;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+      overflow: hidden;
+      background: var(--rec-white);
+    }
+    /* Left info panel */
+    .info-panel {
+      background-color: var(--rec-purple);
+      color: var(--rec-white);
+      flex: 1;
+      padding: 50px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .info-panel h2 {
+      font-size: 1.6rem;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    .info-panel p {
+      line-height: 1.6;
+      margin-bottom: 16px;
+      font-size: 0.95rem;
+    }
+    .info-panel button {
+      margin-top: 20px;
+      background: var(--rec-white);
+      color: var(--rec-purple);
+      font-weight: 600;
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .info-panel button:hover {
+      background: #eaeaea;
+    }
+    /* Right form panel */
+    .form-panel {
+      flex: 1;
+      background: #f9f9f9;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .form-panel h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+      color: var(--rec-purple);
+    }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    input, select {
+      width: 90%;
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border 0.3s;
+    }
+    .name-row, .password-row, .row-select {
+      display: flex;
+      gap: 12px;
+    }
+    .name-row input, .password-row input, .row-select select {
+      flex: 1;
+    }
+    .checkbox-container {
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 6px; /* reduced gap */
+    }
+    .checkbox-container input[type="checkbox"] {
+      margin: 0;
+      width: 16px;
+      height: 16px;
+    }
+    .checkbox-container a {
+      color: var(--rec-purple);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .btn-submit {
+      background-color: var(--rec-purple);
+      border: none;
+      padding: 14px;
+      border-radius: 4px;
+      color: var(--rec-white);
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    .btn-submit:hover {
+      background-color: var(--rec-dark-purple);
+    }
+    .error-msg {
+      font-size: 0.85rem;
+      color: red;
+      margin-top: -10px;
+    }
+    .success-msg {
+      font-size: 0.95rem;
+      color: var(--rec-purple);
+      text-align: center;
+      margin-top: 10px;
+    }
+    /* real-time validation highlights */
+    input.error, select.error {
+      border: 2px solid red !important;
+    }
+    input.success, select.success {
+      border: 2px solid var(--rec-purple) !important;
+    }
+  </style>
+</head>
+<body>
+  <div class="signup-container">
+    <div class="info-panel">
+    <img src="css/images/logo.svg" alt="College Logo" />
+      <h2>INFORMATION</h2>
+      <p>Join your official college study group. Discuss doubts, share resources, and collaborate effectively for your academic success.</p>
+      <p><strong>Why StudyGroup? No spam. Organized. Academic-only.</strong></p>
+      <button onclick="location.href='signIn.html'">Have An Account</button>
+    </div>
+
+    <div class="form-panel">
+      <h2>REGISTER FORM</h2>
+      <form id="signupForm" novalidate>
+        <div class="name-row">
+          <input type="text" id="firstName" placeholder="First name" required>
+          <input type="text" id="lastName" placeholder="Last name" required>
+        </div>
+        <input type="email" id="email" placeholder="eg: 220701292@rajalakshmi.edu.in" required>
+        <div id="emailError" class="error-msg"></div>
+
+        <div class="password-row">
+          <input type="password" id="password" placeholder="Password" required>
+          <input type="password" id="confirmPassword" placeholder="Repeat password" required>
+        </div>
+        <div id="passwordError" class="error-msg"></div>
+
+        <div class="row-select">
+          <select id="department" required>
+            <option value="">Select Department</option>
+          </select>
+          <select id="year" required>
+            <option value="">Select Year</option>
+            <option value="1">1st Year</option>
+            <option value="2">2nd Year</option>
+            <option value="3">3rd Year</option>
+            <option value="4">4th Year</option>
+          </select>
+
+        </div>
+
+        <input type="text" id="rollNumber" placeholder="Your roll number" required>
+        <div class="checkbox-container">
+          <input type="checkbox" id="terms" required> <label for="terms">I agree to the <a href="#">Terms and Conditions</a></label>
+        </div>
+        <button type="submit" class="btn-submit">Register</button>
+        <div id="formMsg" class="success-msg"></div>
+      </form>
+    </div>
+  </div>
+
+<!-- Only JS PART is replaced; form action is removed for AJAX -->
+<script>
+// Populate departments dynamically
+fetch("get_departments.php")
+  .then(res => res.json())
+  .then(data => {
+    const deptSelect = document.getElementById("department");
+    data.forEach(dept => {
+      let option = document.createElement("option");
+      option.value = dept.department_id;   // backend expects ID
+      option.textContent = dept.name;      // user sees name
+      deptSelect.appendChild(option);
+    });
+  });
+
+// Handle form submission
+const form = document.getElementById('signupForm');
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const data = {
+    firstName: document.getElementById('firstName').value.trim(),
+    lastName: document.getElementById('lastName').value.trim(),
+    email: document.getElementById('email').value.trim(),
+    password: document.getElementById('password').value,
+    department: document.getElementById('department').value,
+    year: document.getElementById('year').value,
+    rollNumber: document.getElementById('rollNumber').value.trim()
+  };
+
+  fetch('signup.php', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(data)
+  })
+  .then(res => res.json())
+  .then(response => {
+    if(response.status === 'success'){
+      form.reset();
+      document.getElementById('formMsg').textContent = "Registration successful! Please sign in.";
+      setTimeout(()=>{window.location.href='signIn.html';}, 2000);
+    } else {
+      document.getElementById('formMsg').textContent = response.message || "Registration failed.";
+    }
+  })
+  .catch(err => {
+    document.getElementById('formMsg').textContent = "An error occurred.";
+  });
+});
+</script>
+
+
+</body>
+</html>

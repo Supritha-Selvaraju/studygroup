@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sign In – Study Group</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --rec-purple: #6f2da8;
+      --rec-dark-purple: #4e1a73;
+      --rec-yellow: #fed700;
+      --rec-white: #f9f9f9;
+      --rec-gray: #252525;
+    }
+    body {
+      margin: 0;
+      font-family: 'Poppins', Arial, sans-serif;
+      background: var(--rec-gray);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .signin-card {
+      background: var(--rec-white);
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      width: 380px;
+      padding: 40px 30px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .signin-card img {
+      width: 140px;
+      margin-bottom: 24px;
+    }
+    .btn-login, .btn-sso {
+      width: 100%;
+      padding: 14px;
+      margin-bottom: 18px;
+      background: var(--rec-purple);
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--rec-white);
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn-login:hover, .btn-sso:hover {
+      background: var(--rec-dark-purple);
+    }
+    .signin-form {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 8px;
+      align-items: stretch;
+    }
+    .signin-form input {
+      padding: 12px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      outline: none;
+      transition: border 0.3s;
+    }
+    #loginMsg {
+      font-size: 0.95rem;
+      color: red;
+      margin-top: 6px;
+      min-height: 18px;
+      text-align: center;
+    }
+    .divider {
+      margin: 18px 0;
+      color: #888;
+      font-size: 0.93rem;
+      letter-spacing: 0.08em;
+    }
+  </style>
+  <!-- Load MSAL.js from Microsoft for SSO -->
+  <script src="https://alcdn.msauth.net/browser/2.32.0/js/msal-browser.min.js"></script>
+</head>
+<body>
+  <div class="signin-card">
+    <img src="css/images/logo.svg" alt="College Logo" />
+
+
+    <!-- Local email/password form -->
+    <form id="signinForm" class="signin-form" autocomplete="on">
+      <input type="email" id="loginEmail" required placeholder="Email" autocomplete="username" />
+      <input type="password" id="loginPassword" required placeholder="Password" autocomplete="current-password" />
+      <button type="submit" class="btn-login">Login</button>
+      <div id="loginMsg"></div>
+    </form>
+    <div class="divider">or</div>
+    <button id="loginBtn" class="btn-sso">Sign in with Microsoft</button>
+    
+  </div>
+<script>
+  // === Microsoft SSO Configuration ===
+  const isLocal = window.location.hostname === "localhost";
+
+  const msalConfig = {
+    auth: {
+      clientId: "cba6d906-2d47-4805-9acd-4ddf9ed62988",
+      authority: "https://login.microsoftonline.com/32d58eaf-203c-4839-8b16-d2e8398b415c", // "common" works across tenants
+      redirectUri: isLocal 
+        ? "http://localhost:8080/dashboard.php" 
+        : "https://studygroup-frontend-d7gehmg7b2c0eche.southindia-01.azurewebsites.net/dashboard.html"
+    }
+  };
+
+  const msalInstance = new msal.PublicClientApplication(msalConfig);
+
+  document.getElementById("loginBtn").onclick = () => {
+    msalInstance.loginPopup({
+      scopes: ["User.Read"]
+    }).then((response) => {
+      const account = response.account;
+      const email = account.username;
+
+      // Call backend to check if user exists in DB
+      fetch("signin_sso.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: email })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          window.location.href = isLocal 
+            ? "dashboard.php" 
+            : "https://studygroup-frontend-d7gehmg7b2c0eche.southindia-01.azurewebsites.net/dashboard.html";
+        } else {
+          alert(data.message || "Not registered in StudyGroup DB");
+        }
+      });
+    }).catch((err) => {
+      console.error("SSO Login failed:", err);
+      alert("Microsoft sign-in failed. Check console for details.");
+    });
+  };
+
+
+  // === Traditional login (unchanged) ===
+  document.getElementById('signinForm').addEventListener("submit", function(e){
+    e.preventDefault();
+    document.getElementById('loginMsg').textContent = '';
+    const data = {
+      email: document.getElementById('loginEmail').value.trim(),
+      password: document.getElementById('loginPassword').value
+    };
+    fetch('signin.php', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify(data)
+    })
+    .then(res => res.json())
+    .then(response => {
+      if(response.status === 'success'){
+        window.location.href='dashboard.php';
+      } else {
+        document.getElementById('loginMsg').textContent = response.message || 'Login failed.';
+      }
+    }).catch(()=>{
+      document.getElementById('loginMsg').textContent = 'Network error.';
+    });
+  });
+</script>
+
+</body>
+</html>
