@@ -1,3 +1,4 @@
+# Docs: https://github.com/Azure/webapps-deploy
 name: Build and deploy PHP app to Azure Web App - studygroup-app
 
 on:
@@ -31,26 +32,26 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
 
-      - name: Upload artifact for deployment
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: ./public/*   # Deploy contents of public folder, not the folder itself
+          path: ./public  # Only upload the public folder
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     
     steps:
-      - name: Download artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: php-app
-
+      
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'studygroup-app'
           slot-name: 'Production'
-          package: ./public/*  # Deploy contents
+          package: ./php-app  # This matches the uploaded artifact
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
