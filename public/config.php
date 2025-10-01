@@ -8,9 +8,9 @@ if ($env === 'azure') {
     // Azure App Service Settings
     // -------------------------
     $host = 'studygroup-mysql.mysql.database.azure.com';
-    $dbname = getenv('DB_NAME');
-    $username = getenv('DB_USERNAME');   // use App Settings for secrets
-    $password = getenv('DB_PASSWORD');
+    $dbname = 'studygroup_db';
+    $username = getenv('DB_USERNAME') ?: 'Supritha_S';   // use App Settings for secrets
+    $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
     $ssl_ca = __DIR__ . '/DigiCertGlobalRootCA.crt.pem'; // upload CA cert here
 
     $mysqli = mysqli_init();
