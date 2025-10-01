@@ -13,7 +13,8 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -30,27 +31,26 @@ jobs:
         if: steps.check_files.outputs.files_exists == 'true'
         run: composer validate --no-check-publish && composer install --prefer-dist --no-progress
 
-      - name: Upload artifact for deployment job
+      - name: Upload artifact for deployment
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: ./public  # <-- Deploy only public folder
+          path: ./public/*   # Deploy contents of public folder, not the folder itself
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
     
     steps:
-      - name: Download artifact from build job
+      - name: Download artifact
         uses: actions/download-artifact@v4
         with:
           name: php-app
-      
-      - name: 'Deploy to Azure Web App'
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
-        id: deploy-to-webapp
         with:
           app-name: 'studygroup-app'
           slot-name: 'Production'
-          package: ./public  # <-- Deploy only public folder
+          package: ./public/*  # Deploy contents
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
