@@ -11,7 +11,8 @@ if ($env === 'azure') {
     $dbname = 'studygroup_db';
     $username = getenv('DB_USERNAME') ?: 'Supritha_S';   // use App Settings for secrets
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
-    $ssl_ca = __DIR__ . 'certs/DigiCertGlobalRootCA.crt.pem'; // upload CA cert here
+
+    $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem'; // upload CA cert here
 
     $mysqli = mysqli_init();
     mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
