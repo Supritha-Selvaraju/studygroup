@@ -13,15 +13,19 @@ $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem';
 if (!file_exists($ssl_ca)) die("SSL certificate not found at $ssl_ca");
 
 
-    $mysqli = mysqli_init();
-    mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
+$mysqli = mysqli_init();
+if (!mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL)) {
+    die("mysqli_ssl_set() failed");
+}
 
-    if (!mysqli_real_connect($mysqli, $host, $username, $password, $dbname, 3306, NULL, MYSQLI_CLIENT_SSL)) {
-        die(json_encode([
-            "status" => "error",
-            "message" => "Azure DB Connect Error (" . mysqli_connect_errno() . "): " . mysqli_connect_error()
-        ]));
-    }
+
+if (!mysqli_real_connect(
+    $mysqli, $host, $username, $password, $dbname, 3306, NULL,
+    MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT
+)) {
+    die('Azure DB Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+}
+
 
     $mysqli->set_charset("utf8");
 
