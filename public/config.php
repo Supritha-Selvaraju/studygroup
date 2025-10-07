@@ -13,13 +13,17 @@ if ($env === 'azure') {
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
 
     $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem'; // upload CA cert here
+    if (!file_exists($ssl_ca)) {
+    die("SSL certificate not found at $ssl_ca");
+    }
 
     $mysqli = mysqli_init();
     mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
 
-    if (!mysqli_real_connect($mysqli, $host, $username, $password, $dbname, 3306, NULL, MYSQLI_CLIENT_SSL)) {
-        die('Azure DB Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
-    }
+if (!mysqli_real_connect($mysqli, $host, $username, $password, $dbname, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+    die('Azure DB Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
+}
+
 } else {
     // -------------------------
     // Local Docker Settings
