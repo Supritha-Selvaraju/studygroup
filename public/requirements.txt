@@ -2,10 +2,14 @@ to start :
   docker compose up -d
 to check containers :
   docker ps
-to open sql bash(to run queries):
+to open sql bash in docker(to run queries):
   1. docker-compose exec mysql bash
   2. mysql -u root -p studygroup_db
   enter password: root
+
+to open sql bash in azure:
+  1.  mysql -h studygroup-mysql.mysql.database.azure.com -u 'Supritha_S' -p --ssl
+  2.password: Julie@2004
 
 to sync docker with azure:
   1. docker-compose exec -T mysql mysqldump -u root -proot studygroup_db | docker run -i --rm mysql:8.0 mysql -h studygroup-mysql.mysql.database.azure.com -u Supritha_S -pJulie@2004 --ssl-mode=REQUIRED studygroup_db 
