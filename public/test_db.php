@@ -1,7 +1,6 @@
 <?php
 require 'config.php';
-
-$result = $mysqli->query("SELECT COUNT(*) AS total FROM departments");
-$row = $result->fetch_assoc();
-echo "Departments in DB: " . $row['total'];
-?>
+if ($mysqli->connect_error) {
+    die("DB Connect Error: " . $mysqli->connect_error);
+}
+echo "Connected successfully!";
