@@ -1,19 +1,14 @@
 <?php
-// Detect environment (default = local)
-// Set APP_ENV in Azure App Service → Configuration → Application settings
 $env = getenv('APP_ENV') ?: 'local';
 
 if ($env === 'azure') {
-    // -------------------------
-    // Azure App Service Settings
-    // -------------------------
+    // === Azure Connection (SSL Enabled) ===
     $host = 'studygroup-mysql.mysql.database.azure.com';
     $dbname = 'studygroup_db';
-    $username = getenv('DB_USERNAME') ?: 'Supritha_S';   // use App Settings for secrets
+    $username = getenv('DB_USERNAME') ?: 'Supritha_S';
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
 
-    $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem'; // upload CA cert here
-
+    $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem';
     $mysqli = mysqli_init();
     mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
 
@@ -21,9 +16,7 @@ if ($env === 'azure') {
         die('Azure DB Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
     }
 } else {
-    // -------------------------
-    // Local Docker Settings
-    // -------------------------
+    // === Local Docker Connection (NO SSL) ===
     $host = 'studygroup-mysql';
     $dbname = 'studygroup_db';
     $username = 'root';
@@ -35,6 +28,6 @@ if ($env === 'azure') {
         die("Local DB Connection failed: " . $mysqli->connect_error);
     }
 
-    $mysqli->set_charset("utf8");
+    $mysqli->set_charset("utf8mb4");
 }
 ?>
