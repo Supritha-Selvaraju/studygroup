@@ -1,4 +1,10 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+ini_set('error_log', '/home/LogFiles/php_errors.log');
+
+// Your existing code follows
 $host = 'studygroup-mysql.mysql.database.azure.com';
 $user = 'Supritha_S@studygroup-mysql';
 $pass = 'Julie@2004';
