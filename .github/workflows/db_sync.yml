@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main  # Trigger on main branch push
+  workflow_dispatch:
 
 jobs:
   sync-db:
@@ -30,20 +31,31 @@ jobs:
       - name: Install MySQL client
         run: sudo apt-get update && sudo apt-get install -y mysql-client
 
-      - name: Wait for MySQL container
-        run: sleep 20  # wait for container to be ready
-
-      - name: Dump local Docker MySQL
+      - name: Wait for MySQL to be ready
         run: |
-          docker exec $(docker ps -qf "name=mysql") \
-          mysqldump -u root -p${{ secrets.LOCAL_MYSQL_PASSWORD }} studygroup_db > studygroup_db.sql
+          echo "Waiting for local MySQL service to be ready..."
+          for i in {1..10}; do
+            if mysqladmin ping -h 127.0.0.1 -uroot -p${{ secrets.LOCAL_MYSQL_PASSWORD }} --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Retrying in 5s..."
+            sleep 5
+          done
 
-      - name: Import dump to Azure MySQL
+      - name: Dump local MySQL (inside GitHub runner)
         run: |
+          echo "Creating local dump..."
+          mysqldump -h 127.0.0.1 -uroot -p${{ secrets.LOCAL_MYSQL_PASSWORD }} studygroup_db > studygroup_db.sql
+
+      - name: Import dump into Azure MySQL
+        run: |
+          echo "Importing to Azure MySQL..."
           mysql -h ${{ secrets.AZURE_MYSQL_HOST }} \
                 -u ${{ secrets.AZURE_MYSQL_USER }} \
                 -p${{ secrets.AZURE_MYSQL_PASSWORD }} \
-                --ssl studygroup_db < studygroup_db.sql
+                --ssl-mode=REQUIRED \
+                ${{ secrets.AZURE_MYSQL_DB }} < studygroup_db.sql
 
-      - name: Notify Success
-        run: echo "Database successfully synced to Azure MySQL!"
+      - name: Success message
+        run: echo "✅ Database successfully synced to Azure MySQL!"
