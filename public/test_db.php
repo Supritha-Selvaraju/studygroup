@@ -1,6 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+$mysqli = new mysqli(
+    getenv('DB_HOST'),
+    getenv('DB_USERNAME'),
+    getenv('DB_PASSWORD'),
+    getenv('DB_NAME'),
+    3306,
+    NULL,
+    MYSQLI_CLIENT_SSL
+);
 
-phpinfo();
+if ($mysqli->connect_error) {
+    die('Connection failed: ' . $mysqli->connect_error);
+} else {
+    echo "✅ Connected to Azure MySQL with SSL successfully!";
+    echo "<br>SSL Cipher: " . $mysqli->get_ssl_cipher();
+}
+?>
