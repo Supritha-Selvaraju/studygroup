@@ -1,0 +1,265 @@
+<?php
+include 'db.php';
+session_start();
+$student_id = $_SESSION['student_id'] ?? 1;
+
+$sql = "SELECT * FROM students WHERE id = $student_id";
+$result = $conn->query($sql);
+$user = $result->fetch_assoc();
+
+$groups_joined = $conn->query("SELECT * FROM groups WHERE id IN (SELECT group_id FROM group_members WHERE student_id = $student_id)");
+$groups_created = $conn->query("SELECT * FROM groups WHERE created_by = $student_id");
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Profile</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* -------------------- GLOBAL THEME -------------------- */
+body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+.container {
+  width: 90%;
+  max-width: 1000px;
+  margin: 30px auto;
+  background: #1e293b;
+  border-radius: 16px;
+  padding: 20px 30px 40px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+
+/* -------------------- BUTTONS -------------------- */
+.back-btn {
+  background: none;
+  color: #38bdf8;
+  border: 1px solid #38bdf8;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  font-size: 15px;
+  transition: all 0.2s;
+}
+.back-btn:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+button.save-btn {
+  background: #38bdf8;
+  color: #0f172a;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 10px;
+  transition: 0.3s;
+}
+button.save-btn:hover {
+  background: #0ea5e9;
+}
+
+/* -------------------- TABS -------------------- */
+.nav-tabs {
+  display: flex;
+  border-bottom: 1px solid #334155;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.nav-tabs button {
+  flex: 1;
+  background: none;
+  border: none;
+  padding: 12px;
+  color: #cbd5e1;
+  cursor: pointer;
+  font-size: 16px;
+  transition: color 0.2s;
+}
+.nav-tabs button.active {
+  color: #f8fafc;
+  border-bottom: 2px solid #38bdf8;
+}
+.tab-content {
+  display: none;
+}
+.tab-content.active {
+  display: block;
+}
+
+/* -------------------- PROFILE -------------------- */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.profile-header img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid #38bdf8;
+  object-fit: cover;
+}
+.profile-header h2 {
+  font-size: 22px;
+  margin: 0;
+  color: #f8fafc;
+}
+label {
+  display: block;
+  margin-top: 12px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+input, select {
+  width: 100%;
+  background: #0f172a;
+  border: 1px solid #334155;
+  color: #f1f5f9;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 5px;
+  font-size: 15px;
+}
+input[type="file"] {
+  padding: 6px;
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+/* -------------------- GROUPS -------------------- */
+.group-card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 12px;
+  padding: 15px;
+  margin-bottom: 12px;
+}
+.group-card h4 {
+  margin: 0 0 4px;
+  color: #f8fafc;
+}
+.group-card span {
+  font-size: 14px;
+  color: #94a3b8;
+}
+
+/* -------------------- RESPONSIVE DESIGN -------------------- */
+@media (max-width: 768px) {
+  .container {
+    padding: 15px 20px;
+  }
+  .profile-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .profile-header img {
+    width: 80px;
+    height: 80px;
+  }
+  .nav-tabs button {
+    font-size: 14px;
+    padding: 10px;
+  }
+  label {
+    font-size: 14px;
+  }
+  input {
+    font-size: 14px;
+  }
+}
+@media (max-width: 480px) {
+  .container {
+    width: 95%;
+    border-radius: 12px;
+  }
+  .profile-header h2 {
+    font-size: 18px;
+  }
+  .save-btn {
+    width: 100%;
+  }
+}
+</style>
+
+<script>
+function switchTab(tabName) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tabs button').forEach(b => b.classList.remove('active'));
+  document.getElementById(tabName).classList.add('active');
+  document.getElementById(tabName + '-tab').classList.add('active');
+}
+</script>
+</head>
+<body>
+
+<div class="container">
+  <button class="back-btn" onclick="window.location.href='dashboard.php'">← Back to Dashboard</button>
+
+  <div class="nav-tabs">
+    <button id="personal-tab" class="active" onclick="switchTab('personal')">Personal Details</button>
+    <button id="courses-tab" onclick="switchTab('courses')">Course Groups Registered</button>
+  </div>
+
+  <!-- ---------------- PERSONAL DETAILS TAB ---------------- -->
+  <div id="personal" class="tab-content active">
+    <div class="profile-header">
+      <img src="assets/profile_pics/<?php echo $user['photo'] ?? 'default.png'; ?>" alt="Profile Picture">
+      <h2><?php echo htmlspecialchars($user['name']); ?></h2>
+    </div>
+
+    <form action="update_profile.php" method="POST" enctype="multipart/form-data">
+      <label>Roll Number</label>
+      <input type="text" name="roll" value="<?php echo $user['roll_number']; ?>">
+
+      <label>Department</label>
+      <input type="text" name="dept" value="<?php echo $user['department']; ?>">
+
+      <label>Semester</label>
+      <input type="text" name="semester" value="<?php echo $user['semester']; ?>">
+
+      <label>Date of Birth</label>
+      <input type="date" name="dob" value="<?php echo $user['dob']; ?>">
+
+      <label>Email</label>
+      <input type="email" name="email" value="<?php echo $user['email']; ?>">
+
+      <label>Profile Photo</label>
+      <input type="file" name="photo">
+
+      <button class="save-btn" type="submit">Save Changes</button>
+    </form>
+  </div>
+
+  <!-- ---------------- COURSE GROUPS TAB ---------------- -->
+  <div id="courses" class="tab-content">
+    <h3>Groups Joined</h3>
+    <?php while($g = $groups_joined->fetch_assoc()): ?>
+      <div class="group-card">
+        <h4><?php echo htmlspecialchars($g['group_name']); ?></h4>
+        <span>Course: <?php echo htmlspecialchars($g['course']); ?></span>
+      </div>
+    <?php endwhile; ?>
+
+    <h3>Groups Created</h3>
+    <?php while($g = $groups_created->fetch_assoc()): ?>
+      <div class="group-card">
+        <h4><?php echo htmlspecialchars($g['group_name']); ?></h4>
+        <span>Course: <?php echo htmlspecialchars($g['course']); ?></span>
+      </div>
+    <?php endwhile; ?>
+  </div>
+</div>
+
+</body>
+</html>
