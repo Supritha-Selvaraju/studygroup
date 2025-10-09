@@ -9,19 +9,11 @@ if ($env === 'azure') {
 
     $mysqli = mysqli_init();
 
-    // ✅ Explicitly set SSL CA path (Azure public certificate)
-mysqli_ssl_set(
-    $mysqli,
-    NULL,  // key
-    NULL,  // cert
-    __DIR__ . '/BaltimoreCyberTrustRoot.crt.pem', // CA certificate path
-    NULL,  // cipher
-    NULL   // passphrase
-);
+    // ✅ Force SSL without specifying CA file (Azure App Service has trusted CA store)
+    $mysqli->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, true);
+    $mysqli->ssl_set(NULL, NULL, NULL, NULL, NULL);
 
-    // ✅ Force SSL connection using modern TLS (1.2+)
-    if (!mysqli_real_connect(
-        $mysqli,
+    if (!$mysqli->real_connect(
         $host,
         $username,
         $password,
@@ -34,6 +26,7 @@ mysqli_ssl_set(
     }
 
     $mysqli->set_charset('utf8mb4');
+
 } else {
     $mysqli = new mysqli('studygroup-mysql', 'root', 'root', 'studygroup_db');
     if ($mysqli->connect_error) die('Local DB Connection failed: ' . $mysqli->connect_error);
