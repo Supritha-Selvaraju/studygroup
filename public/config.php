@@ -12,9 +12,24 @@ if ($env === 'azure') {
     $mysqli = mysqli_init();
     mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
 
-    if (!mysqli_real_connect($mysqli, $host, $username, $password, $dbname, 3306, NULL, MYSQLI_CLIENT_SSL)) {
+    if (!mysqli_real_connect(
+        $mysqli,
+        $host,
+        $username,
+        $password,
+        $dbname,
+        3306,
+        NULL,
+        MYSQLI_CLIENT_SSL_DONT_VERIFY_SERVER_CERT
+    )) {
         die('Azure DB Connect Error (' . mysqli_connect_errno() . ') ' . mysqli_connect_error());
     }
+
+    // ✅ Force a known charset to avoid "unknown charset" error
+    if (!$mysqli->set_charset("utf8mb4")) {
+        $mysqli->set_charset("utf8");
+    }
+
 } else {
     // === Local Docker Connection (NO SSL) ===
     $host = 'studygroup-mysql';
