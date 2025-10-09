@@ -433,7 +433,10 @@ textarea{
 
 			<div class="user">
 				<span class="badge">Student</span>
-				<div class="avatar"></div>
+				<a href="profile.html">
+					<div class="avatar"></div>
+				</a>
+				
 			</div>
 		</header>
 

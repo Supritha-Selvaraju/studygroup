@@ -12,6 +12,7 @@ body {
   font-family: 'Inter', sans-serif;
   margin: 0;
   padding: 0;
+  position: relative;
 }
 .container {
   width: 90%;
@@ -21,6 +22,44 @@ body {
   border-radius: 16px;
   padding: 20px 30px 40px;
   box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  position: relative;
+}
+
+/* -------------------- PROFILE ICON (TOP RIGHT) -------------------- */
+.user-profile {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: absolute;
+  top: 15px;
+  right: 25px;
+}
+.profile-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: #f8fafc;
+  transition: opacity 0.2s;
+}
+.profile-link:hover {
+  opacity: 0.8;
+}
+.user-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1e293b;
+}
+.user-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 /* -------------------- BUTTONS -------------------- */
@@ -186,11 +225,31 @@ function switchTab(tabName) {
   document.getElementById(tabName).classList.add('active');
   document.getElementById(tabName + '-tab').classList.add('active');
 }
+
+// 🔹 Preview uploaded profile photo before saving
+function previewPhoto(event) {
+  const img = document.getElementById('profile-img');
+  const file = event.target.files[0];
+  if (file) {
+    img.src = URL.createObjectURL(file);
+  }
+}
 </script>
 </head>
 <body>
 
 <div class="container">
+
+  <!-- Optional Profile Icon (Top Right) -->
+  <div class="user-profile">
+    <a href="profile.php" class="profile-link">
+      <div class="user-circle">
+        <img src="assets/profile_pics/<?php echo htmlspecialchars($user['photo'] ?? 'default.png'); ?>" alt="User">
+      </div>
+      <span><?php echo htmlspecialchars($user['name']); ?></span>
+    </a>
+  </div>
+
   <button class="back-btn" onclick="window.location.href='dashboard.php'">← Back to Dashboard</button>
 
   <div class="nav-tabs">
@@ -201,28 +260,28 @@ function switchTab(tabName) {
   <!-- ---------------- PERSONAL DETAILS TAB ---------------- -->
   <div id="personal" class="tab-content active">
     <div class="profile-header">
-      <img src="assets/profile_pics/<?php echo $user['photo'] ?? 'default.png'; ?>" alt="Profile Picture">
+      <img id="profile-img" src="assets/profile_pics/<?php echo htmlspecialchars($user['photo'] ?? 'default.png'); ?>" alt="Profile Picture">
       <h2><?php echo htmlspecialchars($user['name']); ?></h2>
     </div>
 
     <form action="update_profile.php" method="POST" enctype="multipart/form-data">
       <label>Roll Number</label>
-      <input type="text" name="roll" value="<?php echo $user['roll_number']; ?>">
+      <input type="text" name="roll" value="<?php echo htmlspecialchars($user['roll_number']); ?>">
 
       <label>Department</label>
-      <input type="text" name="dept" value="<?php echo $user['department']; ?>">
+      <input type="text" name="dept" value="<?php echo htmlspecialchars($user['department']); ?>">
 
       <label>Semester</label>
-      <input type="text" name="semester" value="<?php echo $user['semester']; ?>">
+      <input type="text" name="semester" value="<?php echo htmlspecialchars($user['semester']); ?>">
 
       <label>Date of Birth</label>
-      <input type="date" name="dob" value="<?php echo $user['dob']; ?>">
+      <input type="date" name="dob" value="<?php echo htmlspecialchars($user['dob']); ?>">
 
       <label>Email</label>
-      <input type="email" name="email" value="<?php echo $user['email']; ?>">
+      <input type="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>">
 
       <label>Profile Photo</label>
-      <input type="file" name="photo">
+      <input type="file" name="photo" accept="image/*" onchange="previewPhoto(event)">
 
       <button class="save-btn" type="submit">Save Changes</button>
     </form>
