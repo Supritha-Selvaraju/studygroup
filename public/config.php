@@ -2,18 +2,24 @@
 $env = getenv('APP_ENV') ?: 'local';
 
 if ($env === 'azure') {
-    // ✅ Get all values from Azure App Settings
     $host = getenv('DB_HOST') ?: 'studygroup-mysql.mysql.database.azure.com';
     $dbname = getenv('DB_NAME') ?: 'studygroup_db';
     $username = getenv('DB_USERNAME') ?: 'Supritha_S@studygroup-mysql';
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
-    $sslmode = getenv('DB_SSL_MODE') ?: 'Required';
 
     $mysqli = mysqli_init();
 
-    // ✅ Use SSL (Azure MySQL enforces SSL by default)
-    mysqli_ssl_set($mysqli, NULL, NULL, NULL, NULL, NULL);
+    // ✅ Explicitly set SSL CA path (Azure public certificate)
+mysqli_ssl_set(
+    $mysqli,
+    NULL,  // key
+    NULL,  // cert
+    __DIR__ . '/BaltimoreCyberTrustRoot.crt.pem', // CA certificate path
+    NULL,  // cipher
+    NULL   // passphrase
+);
 
+    // ✅ Force SSL connection using modern TLS (1.2+)
     if (!mysqli_real_connect(
         $mysqli,
         $host,
@@ -29,11 +35,8 @@ if ($env === 'azure') {
 
     $mysqli->set_charset('utf8mb4');
 } else {
-    // ✅ Local Development Setup
-    $mysqli = new mysqli('127.0.0.1', 'root', 'root', 'studygroup_db');
-    if ($mysqli->connect_error) {
-        die('Local DB Connection failed: ' . $mysqli->connect_error);
-    }
+    $mysqli = new mysqli('studygroup-mysql', 'root', 'root', 'studygroup_db');
+    if ($mysqli->connect_error) die('Local DB Connection failed: ' . $mysqli->connect_error);
     $mysqli->set_charset('utf8mb4');
 }
 ?>
