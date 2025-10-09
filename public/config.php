@@ -4,7 +4,7 @@ $env = getenv('APP_ENV') ?: 'local';
 if ($env === 'azure') {
     $host = 'studygroup-mysql.mysql.database.azure.com';
     $dbname = 'studygroup_db';
-    $username = getenv('DB_USERNAME') ?: 'Supritha_S@studygroup-mysql';
+    $username = getenv('DB_USERNAME') ?: 'supritha_php';
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
 
     $mysqli = mysqli_init();
