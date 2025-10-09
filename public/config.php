@@ -5,10 +5,10 @@ if ($env === 'azure') {
     // === Azure Connection (SSL Enabled) ===
     $host = 'studygroup-mysql.mysql.database.azure.com';
     $dbname = 'studygroup_db';
-    $username = getenv('DB_USERNAME') ?: 'Supritha_S';
+    $username = getenv('DB_USERNAME') ?: 'Supritha_S@studygroup-mysql';
     $password = getenv('DB_PASSWORD') ?: 'Julie@2004';
 
-    $ssl_ca = __DIR__ . '/certs/DigiCertGlobalRootCA.crt.pem';
+    $ssl_ca = __DIR__ . '/public/certs/DigiCertGlobalRootCA.crt.pem';
     $mysqli = mysqli_init();
     mysqli_ssl_set($mysqli, NULL, NULL, $ssl_ca, NULL, NULL);
 
