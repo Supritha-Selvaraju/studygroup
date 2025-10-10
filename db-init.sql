@@ -1,3 +1,4 @@
+-- Create Database
 CREATE DATABASE IF NOT EXISTS studygroup_db;
 USE studygroup_db;
 
@@ -53,7 +54,7 @@ CREATE TABLE IF NOT EXISTS group_members (
   FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Messages
+-- Messages (Core feature for industry study groups)
 CREATE TABLE IF NOT EXISTS messages (
   message_id INT AUTO_INCREMENT PRIMARY KEY,
   group_id INT NOT NULL,
@@ -64,7 +65,7 @@ CREATE TABLE IF NOT EXISTS messages (
   FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
 
--- Materials
+-- Materials (Resource sharing)
 CREATE TABLE IF NOT EXISTS materials (
   material_id INT AUTO_INCREMENT PRIMARY KEY,
   group_id INT NOT NULL,
@@ -77,7 +78,7 @@ CREATE TABLE IF NOT EXISTS materials (
   FOREIGN KEY (uploaded_by) REFERENCES users(user_id)
 );
 
--- Study Sessions
+-- Study Sessions (Calendar/Events)
 CREATE TABLE IF NOT EXISTS study_sessions (
   session_id INT AUTO_INCREMENT PRIMARY KEY,
   group_id INT NOT NULL,
@@ -87,4 +88,16 @@ CREATE TABLE IF NOT EXISTS study_sessions (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (group_id) REFERENCES study_groups(group_id) ON DELETE CASCADE,
   FOREIGN KEY (created_by) REFERENCES users(user_id)
+);
+
+-- Extra Feature: Academic Progress Tracking (Simple notes/status)
+CREATE TABLE IF NOT EXISTS academic_notes (
+    note_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    subject_id INT, -- Can be linked to a subject or general
+    note_title VARCHAR(255) NOT NULL,
+    note_content TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE SET NULL
 );
