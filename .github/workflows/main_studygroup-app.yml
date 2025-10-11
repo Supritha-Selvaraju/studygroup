@@ -23,7 +23,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: .
+          path: ./public   # Only upload public folder
 
   deploy:
     runs-on: ubuntu-latest
@@ -43,5 +43,4 @@ jobs:
         with:
           app-name: 'studygroup-frontend'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
-          package: .
-
+          package: ./php-app   # Deploy only the public folder artifact
