@@ -29,7 +29,8 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'studygroup-app'
+          app-name: 'studygroup-frontend'
           slot-name: 'Production'
           package: ./public   # <--- Deploy directly from public folder
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
+
