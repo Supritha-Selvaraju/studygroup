@@ -101,3 +101,10 @@ CREATE TABLE IF NOT EXISTS academic_notes (
     FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
     FOREIGN KEY (subject_id) REFERENCES subjects(subject_id) ON DELETE SET NULL
 );
+CREATE TABLE IF NOT EXISTS upvotes (
+  message_id INT NOT NULL,
+  user_id INT NOT NULL,
+  PRIMARY KEY (message_id, user_id),
+  FOREIGN KEY (message_id) REFERENCES messages(message_id) ON DELETE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);

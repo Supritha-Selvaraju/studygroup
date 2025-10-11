@@ -963,55 +963,55 @@
             });
     }
 
-    function filterAndRenderGroups() {
-        const list = document.getElementById('joinedGroupsList');
-        if (!list || !joinedGroupsData) return;
+function filterAndRenderGroups() {
+    const list = document.getElementById('joinedGroupsList');
+    if (!list || !joinedGroupsData) return;
 
-        const filteredGroups = joinedGroupsData.filter(g => {
-            if (!currentSearchTerm) return true;
-            const searchString = `${g.group_name} ${g.next_event || ''} ${g.subject_code || ''}`.toLowerCase();
-            return searchString.includes(currentSearchTerm);
+    const filteredGroups = joinedGroupsData.filter(g => {
+        if (!currentSearchTerm) return true;
+        const searchString = `${g.group_name} ${g.next_event || ''} ${g.subject_code || ''}`.toLowerCase();
+        return searchString.includes(currentSearchTerm);
+    });
+
+    // Apply pagination
+    const startIndex = (groupsCurrentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const pageGroups = filteredGroups.slice(startIndex, endIndex);
+
+    updatePaginationControls('groups', groupsCurrentPage, filteredGroups.length);
+
+    list.innerHTML = '';
+    if (pageGroups.length > 0) {
+        pageGroups.forEach(g => {
+            let card = document.createElement('div');
+            card.className = 'group-card';
+            card.innerHTML = `
+                <div class="card-content">
+                    <h4>${g.group_name}</h4>
+                    <div style="color:var(--text-muted); font-size: 0.9rem;">
+                        <span style="font-weight: 600;">Members:</span> ${g.member_count || 'N/A'}
+                    </div>
+                    <div style="color:var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
+                        <span style="font-weight: 600;">Next Session:</span> ${g.next_event || 'None Scheduled'}
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <button class="primary" onclick="window.location.href='group_chat.php?group_id=${g.group_id}'">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Go to Chat
+                    </button>
+                    <button class="secondary" onclick="leaveGroup(${g.group_id}, '${g.group_name}')">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="18" y1="8" x2="22" y2="12"/><line x1="22" y1="8" x2="18" y2="12"/></svg>
+                        Leave
+                    </button>
+                </div>
+            `;
+            list.appendChild(card);
         });
-
-        // Apply pagination
-        const startIndex = (groupsCurrentPage - 1) * ITEMS_PER_PAGE;
-        const endIndex = startIndex + ITEMS_PER_PAGE;
-        const pageGroups = filteredGroups.slice(startIndex, endIndex);
-
-        updatePaginationControls('groups', groupsCurrentPage, filteredGroups.length);
-
-        list.innerHTML = '';
-        if (pageGroups.length > 0) {
-            pageGroups.forEach(g => {
-                let card = document.createElement('div');
-                card.className = 'group-card';
-                card.innerHTML = `
-                    <div class="card-content">
-                        <h4>${g.group_name}</h4>
-                        <div style="color:var(--text-muted); font-size: 0.9rem;">
-                            <span style="font-weight: 600;">Members:</span> ${g.member_count || 'N/A'}
-                        </div>
-                        <div style="color:var(--text-muted); font-size: 0.9rem; margin-top: 0.25rem;">
-                            <span style="font-weight: 600;">Next Session:</span> ${g.next_event || 'None Scheduled'}
-                        </div>
-                    </div>
-                    <div class="card-actions">
-                        <button class="primary" onclick="showMessage('Group Chat', 'Opening chat for ${g.group_name}...')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                            Go to Chat
-                        </button>
-                        <button class="secondary" onclick="leaveGroup(${g.group_id}, '${g.group_name}')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="18" y1="8" x2="22" y2="12"/><line x1="22" y1="8" x2="18" y2="12"/></svg>
-                            Leave
-                        </button>
-                    </div>
-                `;
-                list.appendChild(card);
-            });
-        } else {
-             list.innerHTML = `<p style="color: var(--text-muted); text-align: center;">${currentSearchTerm ? 'No groups matched your search.' : 'You haven\'t joined any groups yet. Start one now!'}</p>`;
-        }
+    } else {
+        list.innerHTML = `<p style="color: var(--text-muted); text-align: center;">${currentSearchTerm ? 'No groups matched your search.' : 'You haven\'t joined any groups yet. Start one now!'}</p>`;
     }
+}
 
     function loadCourses() {
         robustFetch('api/get_courses.php').then(courses => {
