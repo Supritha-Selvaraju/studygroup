@@ -42,5 +42,6 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'studygroup-frontend'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
           package: .
+
