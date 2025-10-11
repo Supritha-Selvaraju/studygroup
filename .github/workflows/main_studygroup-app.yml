@@ -1,5 +1,4 @@
-# File: .github/workflows/main_studygroup-app.yml
-name: Build and deploy PHP app to Azure Web App - studygroup-app
+name: Build and deploy PHP app to Azure Web App - studygroup-frontend-d7gehmg7b2c0eche
 
 on:
   push:
@@ -9,7 +8,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest   # ✅ Your App Service runs on Windows
 
     steps:
       - name: Checkout code
@@ -18,19 +17,21 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.2'  # ✅ Match Azure runtime version
+          extensions: mbstring, mysqli, pdo_mysql
+          ini-values: post_max_size=256M, upload_max_filesize=256M
+          coverage: none
 
-      - name: Install Composer dependencies (if any)
+      - name: Install Composer dependencies
         run: |
-          if [ -f composer.json ]; then
-            composer install --prefer-dist --no-progress --no-interaction
-          fi
+          if (Test-Path composer.json) {
+            composer install --no-interaction --prefer-dist --optimize-autoloader
+          }
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'studygroup-frontend'
+          app-name: 'studygroup-frontend-d7gehmg7b2c0eche'   # ✅ Updated app name
           slot-name: 'Production'
-          package: ./public   # <--- Deploy directly from public folder
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
-
+          package: .                                         # ✅ Deploy full project
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_STUDYGROUPFRONTEND }}
