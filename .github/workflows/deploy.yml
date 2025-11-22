@@ -3,7 +3,7 @@ name: Deploy PHP App to Azure Web App
 on:
   push:
     branches:
-      - main  # or master, depending on your repo
+      - main
 
 jobs:
   build:
@@ -18,9 +18,15 @@ jobs:
       with:
         php-version: '8.2'
 
+    # Package ONLY the 'public' folder (your real app root)
+    - name: Archive public folder
+      run: |
+        mkdir app
+        cp -r public/* app/
+
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
       with:
-        app-name: "studygroup-app"   # ⚠️ Use your Azure Web App name
+        app-name: "studygroup-app"                   # Must match Azure Web App name
         publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
-        package: .
+        package: ./app
