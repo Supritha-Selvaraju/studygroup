@@ -1,4 +1,4 @@
-name: Build and deploy PHP app to Azure Web App - studygroup-frontend-d7gehmg7b2c0eche
+name: Deploy PHP App to Azure Web App - studygroup-app
 
 on:
   push:
@@ -11,36 +11,29 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-
-      - name: Upload artifact for deployment job
+      # Upload entire repository (not just /public)
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: php-app
-          path: ./public   # Only upload public folder
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-    environment:
-      name: production
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
+
     steps:
-      - name: Download artifact from build job
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: php-app
 
       - name: Deploy to Azure Web App
-        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'studygroup-frontend'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_E78B89FC3B4B44A781E18FCBF3DCC21E }}
-          package: ./php-app   # Deploy only the public folder artifact
+          app-name: 'studygroup-app'   # ✔ correct app
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: .
