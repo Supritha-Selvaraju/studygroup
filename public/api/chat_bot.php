@@ -2,7 +2,7 @@
 header('Content-Type: application/json');
 
 // 1. Configuration (Set your OpenRouter Key here)
-$openai_api_key = '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'; 
+$openai_api_key = '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'; 
 
 // --- REAL API LOGIC ---
 $data = json_decode(file_get_contents("php://input"), true);
