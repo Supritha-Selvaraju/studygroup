@@ -1,4 +1,5 @@
 if ($env === 'azure') {
+
     $host = getenv('DB_HOST');
     $dbname = getenv('DB_NAME');
     $username = getenv('DB_USERNAME');
@@ -6,7 +7,7 @@ if ($env === 'azure') {
 
     $mysqli = mysqli_init();
 
-    // Azure requires SSL but does not require CA verification
+    // Azure SSL but without server verification
     $mysqli->options(MYSQLI_OPT_SSL_VERIFY_SERVER_CERT, false);
     $mysqli->ssl_set(NULL, NULL, NULL, NULL, NULL);
 
